@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"reflect"
@@ -15,6 +16,7 @@ import (
 	"strconv"
 	"strings"
 
+	cftoken "github.com/cloudflare/cloudflared/cmd/cloudflared/token"
 	"github.com/coryb/figtree"
 	"github.com/coryb/oreo"
 	"github.com/jinzhu/copier"
@@ -167,11 +169,31 @@ func register(app *kingpin.Application, o *oreo.Client, fig *figtree.FigTree) {
 	app.Flag("login", "login name that corresponds to the user used for authentication").SetValue(&globals.Login)
 
 	o = o.WithPreCallback(func(req *http.Request) (*http.Request, error) {
-		if globals.AuthMethod() == "api-token" {
+		switch globals.AuthMethod() {
+		case "api-token":
 			// need to set basic auth header with user@domain:api-token
 			token := globals.GetPass()
 			authHeader := fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", globals.Login.Value, token))))
 			req.Header.Add("Authorization", authHeader)
+		case "cloudflare-access":
+			//fetch a cloudflare access token and add it as a header.
+			url, err := url.Parse(globals.Endpoint.Value)
+			if err != nil {
+				return req, err
+			}
+			tok, err := cftoken.GetTokenIfExists(url)
+			if err != nil || tok == "" {
+				tok, err = cftoken.FetchToken(url, nil)
+				if err != nil {
+					return req, fmt.Errorf("Failed to refresh token: %w", err)
+				}
+			}
+
+			fmt.Println(tok)
+			if err != nil {
+				return req, err
+			}
+			req.Header.Add("cf-access-token", tok)
 		}
 		return req, nil
 	})
