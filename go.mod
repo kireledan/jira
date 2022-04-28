@@ -35,6 +35,7 @@ require (
 	github.com/tmc/keyring v0.0.0-20171121202319-839169085ae1
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/net v0.0.0-20200625001655-4c5254603344
+	golang.org/x/sys v0.0.0-20220422013727-9388b58f7150 // indirect
 	golang.org/x/text v0.3.2 // indirect
 	gopkg.in/AlecAivazis/survey.v1 v1.6.1
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6

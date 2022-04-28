@@ -189,7 +189,6 @@ func register(app *kingpin.Application, o *oreo.Client, fig *figtree.FigTree) {
 				}
 			}
 
-			fmt.Println(tok)
 			if err != nil {
 				return req, err
 			}
