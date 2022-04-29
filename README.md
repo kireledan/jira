@@ -67,6 +67,15 @@ EOM
 
 Then use `jira login` to authenticate yourself as $USER. To change your username, use the `-u` CLI flag or set `user:` in your config.yml
 
+### Config with cloudflare-Access
+
+If your jira instance is behind cloudflare access (https://github.com/cloudflare/cloudflare-access-for-atlassian), use the following config to get started. 
+```
+user: <email>
+endpoint: <endpoint>
+authentication-method: cloudflare-access
+```
+
 ### Dynamic Configuration
 
 If the **.jira.d/config.yml** file is executable, then **go-jira** will attempt to execute the file and use the stdout for configuration.  You can use this to customize templates or other overrides depending on what type of operation you are running.  For example if you would like to use the "table" template when ever you run `jira ls`, then you can create a template like this:
